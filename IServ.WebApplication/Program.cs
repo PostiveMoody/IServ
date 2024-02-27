@@ -1,4 +1,5 @@
 using IServ.DAL;
+using IServ.WebApplication;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,9 @@ var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ServDbContext>(options =>
     options.UseSqlServer(conn));
+
+builder.Services.AddTransient<IConventionModelFactory, EdmModelFactory>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllersWithViews();
 

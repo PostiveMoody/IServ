@@ -1,4 +1,5 @@
 ﻿using IServ.Domain.Exceptions;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace IServ.Domain
@@ -77,23 +78,49 @@ namespace IServ.Domain
         public static WebPageDomain SeparateDomainName(string webPageDomainFullName)
         {
             // Separate code
+            WebPageDomain webPageDomain = WebPageDomain.Empty();
             var clearedStr = String.Join(";", Regex.Matches(webPageDomainFullName, @"\//(.+?)\/")
                                     .Cast<Match>()
                                     .Select(m => m.Groups[1].Value));
 
-            var domainLevels = clearedStr.Split('.');
+            var domainLevels = clearedStr.Split('.').Reverse().ToArray();
 
             if (domainLevels.Length == 0)
                 throw new DomainException(nameof(webPageDomainFullName) + "invalid domain address");
 
-            if(domainLevels.Length == 4)
+            if (domainLevels.Length > 3)
             {
-
+                webPageDomain.WebPageDomainFourthLevel = domainLevels[3];
             }
 
-            return new WebPageDomain
+            if (domainLevels.Length > 2)
             {
-                WebPageDomainFullName = webPageDomainFullName
+                webPageDomain.WebPageDomainThirdLevel = domainLevels[2]; 
+            }
+
+            webPageDomain.WebPageDomainSecondLevel = domainLevels[1];
+            webPageDomain.WebPageDomainRoot = domainLevels[0];
+            webPageDomain.WebPageDomainFullName = webPageDomainFullName;
+
+            if (webPageDomainFullName.Contains("http"))
+            {
+                webPageDomain.WebPageDomainProtocol =
+                    webPageDomainFullName.Substring(0, webPageDomainFullName.IndexOf(":"));
+            }
+
+            return webPageDomain != null ? webPageDomain : throw new DomainException(nameof(webPageDomain));
+        }
+
+        private static WebPageDomain Empty()
+        {
+            return new WebPageDomain()
+            {
+                WebPageDomainFullName = string.Empty,
+                WebPageDomainSecondLevel = string.Empty,
+                WebPageDomainRoot = string.Empty,
+                WebPageDomainProtocol = null,
+                WebPageDomainFourthLevel = null,
+                WebPageDomainThirdLevel = null,
             };
         }
     }

@@ -5,6 +5,12 @@ namespace IServ.DAL
     public class UnitOfWork : IUnitOfWork
     {
         private ServDbContext _context;
+
+        public UnitOfWork(ServDbContext context)
+        {
+            _context = context;
+        }
+
         public IUniversityRepository UniversityRepository
         {
             get
@@ -15,12 +21,12 @@ namespace IServ.DAL
 
         public void SaveChanges()
         {
-            throw new NotImplementedException();
+            this._context.SaveChanges();
         }
 
-        public Task SaveChangesAsync()
+        public async Task SaveChangesAsync()
         {
-            throw new NotImplementedException();
+            await this._context.SaveChangesAsync();
         }
     }
 }

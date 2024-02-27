@@ -41,12 +41,24 @@ namespace IServ.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StateProvince")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UniversityVersion")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("UniversityId");
 
@@ -65,7 +77,6 @@ namespace IServ.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("WebPageName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WebPageUrlAddress")
