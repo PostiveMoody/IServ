@@ -1,7 +1,9 @@
-﻿using IServ.DAL;
+﻿using Community.OData.Linq;
+using IServ.DAL;
 using IServ.Domain;
 using IServ.WebApplication.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace IServ.WebApplication.Controllers
 {
@@ -26,7 +28,7 @@ namespace IServ.WebApplication.Controllers
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         [HttpPost]
-        [Route("save")]
+        [Route("")]
         public async Task<IActionResult> Post([FromBody] UniverityCreationOptionsDto creationOptions)
         {
             if (creationOptions == null || string.IsNullOrEmpty(creationOptions.AlphaTwoCode))
@@ -49,177 +51,139 @@ namespace IServ.WebApplication.Controllers
             return Ok(university.ToDto());
         }
 
-        ///// <summary>
-        ///// https://stackoverflow.com/questions/48743165/toarrayasync-throws-the-source-iqueryable-doesnt-implement-iasyncenumerable
-        ///// </summary>
-        ///// <param name="filter"></param>
-        ///// <param name="top"></param>
-        ///// <param name="skip"></param>
-        ///// <param name="orderby"></param>
-        ///// <returns></returns>
-        //[HttpGet]
-        //[Route("list")]
-        //public Task<IActionResult> Get(string filter
-        //    , string top
-        //    , string skip
-        //    , string orderby)
-        //{
-        //    var qData = _uow.RequestCardRepository.RequestCards()
-        //       .Where(requestCard => requestCard.IsDeleted == false)
-        //       .Select(requestCard => new RequestCardDto()
-        //       {
-        //           RequestCardId = requestCard.RequestCardId,
-        //           Initiator = requestCard.Initiator,
-        //           SubjectOfAppeal = requestCard.SubjectOfAppeal,
-        //           Description = requestCard.Description,
-        //           DeadlineForHiring = requestCard.DeadlineForHiring,
-        //           Status = requestCard.Status,
-        //           Category = requestCard.Category,
-        //           CreationDate = requestCard.CreationDate,
-        //           RequestCardVersion = requestCard.RequestCardVersion,
-        //           IsDeleted = requestCard.IsDeleted
-        //       }).OData(edmModel: _modelFactory.CreateOrGet());
 
-        //    if (!string.IsNullOrEmpty(filter))
-        //    {
-        //        qData = qData.Filter(filter);
-        //    }
+        // <summary>
+        /// https://stackoverflow.com/questions/48743165/toarrayasync-throws-the-source-iqueryable-doesnt-implement-iasyncenumerable
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="top"></param>
+        /// <param name="skip"></param>
+        /// <param name="orderby"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("")]
+        public IActionResult Get(string filter
+            , string top
+            , string skip
+            , string orderby)
+        {
+            var qData = _uow.UniversityRepository.Universities()
+               .Where(university => university.IsDeleted == false)
+               .Select(university => new UniversityDto()
+               {
+                   UniversityId = university.UniversityId,
+                   AlphaTwoCode = university.AlphaTwoCode,
+                   StateProvince = university.StateProvince,
+                   Country = university.Country,
+                   Name = university.Name,
 
-        //    var totalCount = qData.Count();
+                   WebPageUrlAddresses = university.WebPages.Select(webPage => webPage.WebPageUrlAddress).ToArray(),
+                   WebPageDomains = university.WebPageDomains.Select(webPageDomain => webPageDomain.WebPageDomainFullName).ToArray(),
 
-        //    if (!string.IsNullOrEmpty(orderby))
-        //    {
-        //        qData = qData.OrderBy(orderby);
-        //    }
+                   CreationDate = university.CreationDate,
+                   UpdatedDate = university.UpdatedDate,
+                   UniversityVersion = university.UniversityVersion,
+                   IsDeleted = university.IsDeleted,
 
-        //    if (!string.IsNullOrEmpty(top) && !string.IsNullOrEmpty(skip))
-        //    {
-        //        qData = qData.TopSkip(top, skip);
-        //    }
+               }).OData(edmModel: _modelFactory.CreateOrGet());
 
-        //    var result = qData.ToArray();
+            if (!string.IsNullOrEmpty(filter))
+            {
+                qData = qData.Filter(filter);
+            }
 
-        //    return new PageDto<RequestCardDto>()
-        //    {
-        //        Items = result,
-        //        TotalCount = totalCount,
-        //    }.ToApiResult();
-        //}
+            var totalCount = qData.Count();
 
-        //[HttpGet]
-        //[Route("{requestCardId}")]
-        //public async Task<IActionResult> Get(int requestCardId)
-        //{
-        //    var requestCard = await _uow.RequestCardRepository.RequestCards()
-        //        .FirstOrDefaultAsync(requestCard => requestCard.RequestCardId == requestCardId);
+            if (!string.IsNullOrEmpty(orderby))
+            {
+                qData = qData.OrderBy(orderby);
+            }
 
-        //    if (requestCard == null || requestCard.IsDeleted)
-        //    {
-        //        return ApiResult<RequestCardDto>.CreateFailed(
-        //            Errors.NotFound.Code,
-        //            $"RequestCard # {requestCardId} nof found.");
-        //    }
+            if (!string.IsNullOrEmpty(top) && !string.IsNullOrEmpty(skip))
+            {
+                qData = qData.TopSkip(top, skip);
+            }
 
-        //    return requestCard
-        //        .ToDto()
-        //        .ToApiResult();
-        //}
+            var result = qData.ToArray();
 
-        //[HttpDelete]
-        //[Route("{requestCardId}")]
-        //public async Task<IActionResult> Delete(int requestCardId, int requestCardVersion)
-        //{
-        //    var requestCard = await _uow.RequestCardRepository.RequestCards()
-        //        .FirstOrDefaultAsync(requestCard => requestCard.RequestCardId == requestCardId);
+            return Ok(new PageDto<UniversityDto>()
+            {
+                Items = result,
+                TotalCount = totalCount,
+            });
+        }
 
-        //    if (requestCard == null || requestCard.IsDeleted)
-        //    {
-        //        return ApiResult<RequestCardDto>.CreateFailed(
-        //            Errors.NotFound.Code,
-        //            $"RequestCard # {requestCardId} nof found.");
-        //    }
+        [HttpGet]
+        [Route("{universityId}")]
+        public async Task<IActionResult> Get(int universityId)
+        {
+            var university = await _uow.UniversityRepository.Universities()
+                .Include(u => u.WebPages)
+                .Include(u => u.WebPageDomains)
+                .FirstOrDefaultAsync(university => university.UniversityId == universityId);
 
-        //    var now = DateTime.Now;
-        //    requestCard.Delete(now, requestCardVersion);
-        //    await _uow.SaveChangesAsync();
+            if (university == null || university.IsDeleted)
+            {
+                return NotFound();
+            }
 
-        //    return requestCard
-        //       .ToDto()
-        //       .ToApiResult();
-        //}
+            return Ok(university.ToDto());     
+        }
 
-        //[HttpPut]
-        //[Route("{requestCardId}")]
-        //public async Task<IActionResult> Put(int requestCardId,
-        //    [FromBody] RequestCardUpdateOptionsDto options)
-        //{
-        //    if (options == null || options.DeadlineForHiring == default)
-        //        throw new ArgumentNullException(nameof(options));
+        [HttpDelete]
+        [Route("{universityId}")]
+        public async Task<IActionResult> Delete(int universityId, int universityIdVersion)
+        {
+            var university = await _uow.UniversityRepository.Universities()
+                .Include(u => u.WebPages)
+                .Include(u => u.WebPageDomains)
+                .FirstOrDefaultAsync(university => university.UniversityId == universityId);
 
-        //    var requestCard = await _uow.RequestCardRepository.RequestCards()
-        //        .FirstOrDefaultAsync(requestCard => requestCard.RequestCardId == requestCardId);
+            if (university == null || university.IsDeleted)
+            {
+                return NotFound();
+            }
 
-        //    if (requestCard == null || requestCard.IsDeleted)
-        //    {
-        //        return ApiResult<RequestCardDto>.CreateFailed(
-        //            Errors.NotFound.Code,
-        //            $"RequestCard # {requestCardId} nof found.");
-        //    }
+            var now = DateTime.Now;
+            university.Delete(now, universityIdVersion);
+            await _uow.SaveChangesAsync();
 
-        //    var now = DateTime.Now;
+            return Ok(university.ToDto());
+        }
 
-        //    requestCard.Update(
-        //        now,
-        //        options.Initiator,
-        //        options.SubjectOfAppeal,
-        //        options.Description,
-        //        options.DeadlineForHiring,
-        //        options.Category,
-        //        options.RequestCardVersion);
+        [HttpPut]
+        [Route("{universityId}")]
+        public async Task<IActionResult> Put(int universityId,
+            [FromBody] UniversityUpdateOptionsDto options)
+        {
+            if (options == null || string.IsNullOrEmpty(options.AlphaTwoCode))
+                throw new ArgumentNullException(nameof(options));
 
-        //    await _uow.SaveChangesAsync();
+            var university = await _uow.UniversityRepository.Universities()
+                .Include(u => u.WebPages)
+                .Include(u => u.WebPageDomains)
+                .FirstOrDefaultAsync(university => university.UniversityId == universityId);
 
-        //    return requestCard
-        //       .ToDto()
-        //       .ToApiResult();
-        //}
+            if (university == null || university.IsDeleted)
+            {
+                return NotFound();
+            }
 
-        //[HttpGet]
-        //public IActionResult SaveRequestCard()
-        //{
-        //    return View();
-        //}
-        ///// <summary>
-        ///// Метод создан в целях показать как работает клиентская валидация в ASP.NET Core
-        ///// </summary>
-        ///// <param name="creationOptions"></param>
-        ///// <returns></returns>
-        ///// <exception cref="ArgumentNullException"></exception>
-        //[HttpPost]
-        //public async Task<IActionResult> SaveRequestCard([FromForm] RequestCardCreationOptionsDto creationOptions)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(creationOptions);
-        //    }
+            var now = DateTime.Now;
 
-        //    if (creationOptions == null)
-        //        throw new ArgumentNullException(nameof(creationOptions));
+            university.Update(
+                now,
+                options.AlphaTwoCode,
+                options.Country,
+                options.Name,
+                options.SafeWebPageUrlAddresses.ToList(),
+                options.SafeWebPageDomains.ToList(),
+                options.UniversityVersion,
+                options.StateProvince);
 
-        //    var now = DateTime.Now;
+            await _uow.SaveChangesAsync();
 
-        //    var requestCard = RequestCard.Save(
-        //        now,
-        //        creationOptions.Initiator,
-        //        creationOptions.SubjectOfAppeal,
-        //        creationOptions.Description,
-        //        creationOptions.DeadlineForHiring,
-        //        creationOptions.Category);
-
-        //    _uow.RequestCardRepository.AddToContext(requestCard);
-        //    await _uow.SaveChangesAsync();
-
-        //    return View();
-        //}
+            return Ok(university.ToDto());
+        }
     }
 }

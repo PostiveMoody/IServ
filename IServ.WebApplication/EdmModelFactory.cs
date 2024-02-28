@@ -24,12 +24,10 @@ namespace IServ.WebApplication
                 {
                     var entityType = builder.EntityType<UniversityDto>();
                     entityType.HasKey(x => x.UniversityId);
-                    //entityType.Property(x => x.);
-                    //entityType.Property(x => x.SubjectOfAppeal);
-                    //entityType.Property(x => x.DeadlineForHiring);
-                    //entityType.Property(x => x.Status);
-                    //entityType.Property(x => x.Category);
-                    //entityType.Property(x => x.CreationDate);
+                    entityType.Property(x => x.Country);
+                    entityType.Property(x => x.Name);
+                    entityType.Property(x => x.CreationDate);
+                    entityType.Property(x => x.AlphaTwoCode);
 
                     builder.EntitySet<UniversityDto>(nameof(UniversityDto));
                 }

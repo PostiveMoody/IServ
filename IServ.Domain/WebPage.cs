@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using IServ.Domain.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace IServ.Domain
 {
@@ -12,13 +13,22 @@ namespace IServ.Domain
             string webPageUrlAddress,
             string? webPageName = null)
         {
-            // some validation 45555555555555555555555555555555555566666666666543w342342rfgd
+            if (!IsUrlValid(webPageUrlAddress))
+                throw new DomainException(nameof(webPageUrlAddress) + " param shoud be a URL");
 
             return new WebPage
             {
                 WebPageUrlAddress = webPageUrlAddress,
                 WebPageName = webPageName
             };
+        }
+
+        private static bool IsUrlValid(string url)
+        {
+
+            string pattern = @"^(http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$";
+            Regex reg = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            return reg.IsMatch(url);
         }
     }
 }

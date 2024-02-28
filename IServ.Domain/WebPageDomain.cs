@@ -44,7 +44,8 @@ namespace IServ.Domain
             string webPageDomainRoot,
             string webPageDomainSecondLevel)
         {
-            // some validationqweqweqweqweqwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+            if (!IsUrlValid(webPageDomainFullName))
+                throw new DomainException(nameof(webPageDomainFullName) + " param shoud be a URL");
 
             return new WebPageDomain
             {
@@ -122,6 +123,12 @@ namespace IServ.Domain
                 WebPageDomainFourthLevel = null,
                 WebPageDomainThirdLevel = null,
             };
+        }
+        private static bool IsUrlValid(string url)
+        {
+            string pattern = @"^(http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$";
+            Regex reg = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            return reg.IsMatch(url);
         }
     }
 }
