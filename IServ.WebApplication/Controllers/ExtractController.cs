@@ -73,40 +73,36 @@ namespace IServ.WebApplication.Controllers
             }
 
             var universityIds = universities.Select(university => university.UniversityId);
-            if (universityIds.Any())
+
+            var qData = _uow.UniversityRepository.Universities()
+            .Where(university => university.IsDeleted == false && universityIds.Contains(universities.First().UniversityId))
+            .Select(university => new UniversityDto()
             {
-                var qData = _uow.UniversityRepository.Universities()
-                .Where(university => university.IsDeleted == false && universityIds.Contains(universities.First().UniversityId))
-                .Select(university => new UniversityDto()
-                {
-                    UniversityId = university.UniversityId,
-                    AlphaTwoCode = university.AlphaTwoCode,
-                    StateProvince = university.StateProvince,
-                    Country = university.Country,
-                    Name = university.Name,
+                UniversityId = university.UniversityId,
+                AlphaTwoCode = university.AlphaTwoCode,
+                StateProvince = university.StateProvince,
+                Country = university.Country,
+                Name = university.Name,
 
-                    WebPageUrlAddresses = university.WebPages.Select(webPage => webPage.WebPageUrlAddress).ToArray(),
-                    WebPageDomains = university.WebPageDomains.Select(webPageDomain => webPageDomain.WebPageDomainFullName).ToArray(),
+                WebPageUrlAddresses = university.WebPages.Select(webPage => webPage.WebPageUrlAddress).ToArray(),
+                WebPageDomains = university.WebPageDomains.Select(webPageDomain => webPageDomain.WebPageDomainFullName).ToArray(),
 
-                    CreationDate = university.CreationDate,
-                    UpdatedDate = university.UpdatedDate,
-                    UniversityVersion = university.UniversityVersion,
-                    IsDeleted = university.IsDeleted,
+                CreationDate = university.CreationDate,
+                UpdatedDate = university.UpdatedDate,
+                UniversityVersion = university.UniversityVersion,
+                IsDeleted = university.IsDeleted,
 
-                });
+            });
 
-                var result = qData.ToArray();
-
-                return Ok(new PageDto<UniversityDto>()
-                {
-                    Items = result,
-                    TotalCount = result.Length,
-                });
-            }
+            var result = qData.ToArray();
 
             client.Dispose();
 
-            return NotFound();
+            return Ok(new PageDto<UniversityDto>()
+            {
+                Items = result,
+                TotalCount = result.Length,
+            });
         }
     }
 }
