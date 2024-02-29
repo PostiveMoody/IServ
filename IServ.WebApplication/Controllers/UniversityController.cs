@@ -69,6 +69,8 @@ namespace IServ.WebApplication.Controllers
         {
             var qData = _uow.UniversityRepository.Universities()
                .Where(university => university.IsDeleted == false)
+               .Include(u => u.WebPages)
+               .Include(u => u.WebPageDomains)
                .Select(university => new UniversityDto()
                {
                    UniversityId = university.UniversityId,

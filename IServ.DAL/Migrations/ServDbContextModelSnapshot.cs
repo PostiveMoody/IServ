@@ -34,7 +34,6 @@ namespace IServ.DAL.Migrations
                         .HasDefaultValueSql("NEXT VALUE FOR UniversityIdSequence");
 
                     b.Property<string>("AlphaTwoCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")

@@ -1,4 +1,6 @@
-﻿namespace IServ.WebApplication.Dto
+﻿using Newtonsoft.Json;
+
+namespace IServ.WebApplication.Dto
 {
     public class UniversityDto
     {
@@ -9,8 +11,29 @@
         public string Name { get; set; }
        
         public string[] WebPageUrlAddresses { get; set; }
+
+        [JsonIgnore]
+        public IEnumerable<string> SafeWebPageUrlAddresses
+        {
+            get
+            {
+                return this.WebPageUrlAddresses == null
+                    ? Enumerable.Empty<string>()
+                    : this.WebPageUrlAddresses.ToList();
+            }
+        }
         public string[] WebPageDomains { get; set; }
 
+        [JsonIgnore]
+        public IEnumerable<string> SafeWebPageDomains
+        {
+            get
+            {
+                return this.WebPageUrlAddresses == null
+                    ? Enumerable.Empty<string>()
+                    : this.WebPageUrlAddresses.ToList();
+            }
+        }
         public DateTime CreationDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public int UniversityVersion { get; set; }

@@ -22,5 +22,13 @@ namespace IServ.DAL.Repositories
         {
             this.dbContext.Add(university);
         }
+
+        public void AddToContext(List<University> universities)
+        {
+            foreach (var university in universities)
+            {
+                this.dbContext.Add(university);
+            }
+        }
     }
 }

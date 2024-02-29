@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IServ.DAL.Migrations
 {
     [DbContext(typeof(ServDbContext))]
-    [Migration("20240227063105_University")]
+    [Migration("20240229070335_University")]
     partial class University
     {
         /// <inheritdoc />
@@ -37,7 +37,6 @@ namespace IServ.DAL.Migrations
                         .HasDefaultValueSql("NEXT VALUE FOR UniversityIdSequence");
 
                     b.Property<string>("AlphaTwoCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")

@@ -5,7 +5,7 @@ namespace IServ.Domain
     public class University
     {
         public int UniversityId { get; private set; }
-        public string AlphaTwoCode { get; private set; }
+        public string? AlphaTwoCode { get; private set; }
         public string? StateProvince { get; private set; }
         public string Country { get; private set; }
         public string Name { get; private set; }
@@ -26,18 +26,18 @@ namespace IServ.Domain
             ICollection<string> webPageDomains,
             string? stateProvince = null)
         {
-            if (string.IsNullOrEmpty(alphaTwoCode))
-                throw new DomainException(nameof(alphaTwoCode) + " is empty!");
-            if (alphaTwoCode.Length != 2)
-                throw new DomainException(nameof(alphaTwoCode) + " is invalid!");
+            //if (string.IsNullOrEmpty(alphaTwoCode))
+            //    throw new DomainException(nameof(alphaTwoCode) + " is empty!");
+            //if (alphaTwoCode.Length != 2)
+            //    throw new DomainException(nameof(alphaTwoCode) + " is invalid!");
             if (string.IsNullOrEmpty(country))
                 throw new DomainException(nameof(country) + " is empty!");
             if (string.IsNullOrEmpty(name))
                 throw new DomainException(nameof(name) + " is empty!");
-            if (webPageUrlAddresses.Count == 0)
-                throw new DomainException(nameof(webPageUrlAddresses) + " collection contains 0 items!");
-            if (webPageDomains.Count == 0)
-                throw new DomainException(nameof(webPageDomains) + " collection contains 0 items!");
+            //if (webPageUrlAddresses.Count == 0)
+            //    throw new DomainException(nameof(webPageUrlAddresses) + " collection contains 0 items!");
+            //if (webPageDomains.Count == 0)
+            //    throw new DomainException(nameof(webPageDomains) + " collection contains 0 items!");
 
             var webPageUrlList = new List<WebPage>(webPageUrlAddresses.Count);
             foreach(var webPageUrlAddress in webPageUrlAddresses)

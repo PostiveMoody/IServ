@@ -21,7 +21,7 @@ namespace IServ.DAL.Migrations
                 columns: table => new
                 {
                     UniversityId = table.Column<int>(type: "int", nullable: false, defaultValueSql: "NEXT VALUE FOR UniversityIdSequence"),
-                    AlphaTwoCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AlphaTwoCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StateProvince = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),

@@ -7,5 +7,7 @@ namespace IServ.DAL.Repositories
     {
         public DbSet<University> Universities();
         public void AddToContext(University university);
+
+        public void AddToContext(List<University> universities);
     }
 }
