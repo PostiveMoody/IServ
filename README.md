@@ -25,6 +25,39 @@ http://www.site1.ru/;http://www.site2.ru/)
 3) Открыть VisualStudio/Package Manager Console и вести туда данную команду: Update-Database
 
 # Скрипт SQL для создания таблицы
+Данный проект содержит всего 3 таблицы и 1 техническую. Таблицы были созданы при помощи подхода Code-First EF.
+
+1) University - таблица учебных заведений с описанием стран, uri, доменом.
+   
+        USE [IServApp]
+        GO
+        
+        /****** Object:  Table [dbo].[University]    Script Date: 29.02.2024 7:52:56 ******/
+        SET ANSI_NULLS ON
+        GO
+        
+        SET QUOTED_IDENTIFIER ON
+        GO
+        
+        CREATE TABLE [dbo].[University](
+        	[UniversityId] [int] NOT NULL,
+        	[AlphaTwoCode] [nvarchar](max) NOT NULL,
+        	[StateProvince] [nvarchar](max) NULL,
+        	[Country] [nvarchar](max) NOT NULL,
+        	[Name] [nvarchar](max) NOT NULL,
+        	[CreationDate] [datetime2](7) NOT NULL,
+        	[UpdatedDate] [datetime2](7) NOT NULL,
+        	[UniversityVersion] [int] NOT NULL,
+        	[IsDeleted] [bit] NOT NULL,
+         CONSTRAINT [PK_University] PRIMARY KEY CLUSTERED 
+        (
+        	[UniversityId] ASC
+        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+        ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+        GO
+        
+        ALTER TABLE [dbo].[University] ADD  DEFAULT (NEXT VALUE FOR [UniversityIdSequence]) FOR [UniversityId]
+        GO
 
 # ETL - Extract, Transfer, Load. Один из основных процессов в управлении хранилищами данных.
 # С какими задачами поможет ETL
