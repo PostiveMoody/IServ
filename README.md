@@ -125,6 +125,24 @@ http://www.site1.ru/;http://www.site2.ru/)
          ALTER TABLE [dbo].[WebPageDomain] CHECK CONSTRAINT [FK_WebPageDomain_University_UniversityId]
          GO
 
+**Так же был создан sequence**
+
+      USE [IServApp]
+      GO
+      
+      USE [IServApp]
+      GO
+      
+      /****** Object:  Sequence [dbo].[UniversityIdSequence]    Script Date: 29.02.2024 8:02:32 ******/
+      CREATE SEQUENCE [dbo].[UniversityIdSequence] 
+       AS [int]
+       START WITH 1
+       INCREMENT BY 1
+       MINVALUE 1
+       MAXVALUE 100000
+       CACHE 
+      GO
+         
 # ETL - Extract, Transfer, Load. Один из основных процессов в управлении хранилищами данных.
 # С какими задачами поможет ETL
 
