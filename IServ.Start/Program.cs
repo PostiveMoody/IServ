@@ -1,88 +1,43 @@
-﻿using IServ.ETL;
-using IServ.ETL.DAL;
+﻿using IServ.ETL.DAL;
 using IServ.ETL.Services;
 
 namespace IServ.Start
 {
     public class Program
     {
+        /// <summary>
+        /// Точка входа
+        /// </summary>
+        /// <param name="args"> Первый arg - количество потоков, Второй arg - Флаг БД или Файл</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         static async Task Main(string[] args)
         {
             // Guard Clause
             if(args.Length != 2)
                 throw new ArgumentNullException(nameof(args));
 
-            foreach (char letter in args[1])
+            foreach (char letter in args[0])
             {
                 // Guard from durak
                 if (!char.IsDigit(letter))
                     throw new ArgumentException(nameof(args));
             }
 
-            var countries = args[0].Split(',').ToList();
-            InitializeCountries(countries);
+            if (!bool.TryParse(args[1], out bool result))
+                throw new ArgumentException(nameof(args));
 
-            int.TryParse(args[1], out var numberThreads);
+            InitializeHelper.Initialize(result);
 
-            await Extract(numberThreads, countries);
+            int.TryParse(args[0], out var numberThreads);
 
-            Console.ReadLine();
-        }
-
-        private static async Task<List<UniversityRawData>> Extract(
-            int numberThreads,
-            List<string> countries)
-        {
-            var tasks = new List<Task<List<UniversityRawData>>>(numberThreads);
-            var skip = 0;
-            var take = numberThreads;
-            
-            // O(n)
-            for (int j = 0; j < numberThreads; j++)
-            {
-                ServDbContext db = new ServDbContext();
-                UnitOfWork unit = new UnitOfWork(db);
-                ExtractService extractService = new ExtractService(unit);
-
-                var countriesBatch = countries
-                    .Skip(skip)
-                    .Take(take)
-                    .ToList();
-
-                var work = extractService.GetAsync(countriesBatch);
-                tasks.Add(work);
-                skip += numberThreads;
-            }
-
-            await Task.WhenAll(tasks.ToArray());
-
-            var universityRawDatas = new List<UniversityRawData>();
-            foreach (var task in tasks)
-            {
-                var result = task.Result;
-                universityRawDatas.AddRange(result);
-            }
-
-            return universityRawDatas;
-        }
-
-        /// <summary>
-        /// Инциализирует-заполняет список стран в БД
-        /// </summary>
-        private static void InitializeCountries(List<string> countries)
-        {
             ServDbContext db = new ServDbContext();
             UnitOfWork unit = new UnitOfWork(db);
-
-            List<Country> result = new List<Country>();
+            ExtractService extractService = new ExtractService(unit);
+            await extractService.Extarct(numberThreads);
             
-            foreach (var country in countries)
-            {
-                result.Add(Country.Create(country));
-            }
-
-            unit.CountryRepository.AddToContext(result);
-            unit.SaveChanges();
+            Console.ReadLine();
         }
     }
 }
