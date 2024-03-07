@@ -17,16 +17,16 @@ namespace IServ.ETL.Services
         {
             GetCountries();
 
-            await Extract(numberThreads);
+            var universityRawDatas = await Extract(numberThreads);
 
-            Transofrm();
+            var transformData = Transofrm(universityRawDatas);
 
-            Load();
+            await Load(transformData);
         }
 
         protected abstract Task<List<UniversityRawData>> Extract(int numberThreads);
-        protected abstract void Transofrm();
-        protected abstract void Load();
+        protected abstract List<UniversityRawData> Transofrm(List<UniversityRawData> universityRawDatas);
+        protected abstract Task Load(List<UniversityRawData> universityRawDatas);
 
         public void GetCountries()
         {

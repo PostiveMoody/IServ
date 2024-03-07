@@ -57,14 +57,21 @@ namespace IServ.ETL.Services
             return universityRawDatas;
         }
 
-        protected override void Transofrm()
+        protected override List<UniversityRawData> Transofrm(List<UniversityRawData> universityRawDatas)
         {
-            Console.WriteLine("Фантики");
+            // Мы могли бы отправить запрос в интеренет, и достать информацию о местоположении университета
+            foreach (var universityRawData in universityRawDatas)
+            {
+                universityRawData.StateProvince = "Example";
+            }
+
+            return universityRawDatas;
         }
 
-        protected override void Load()
+        protected override async Task Load(List<UniversityRawData> universityRawDatas)
         {
-            Console.WriteLine("Фантики");
+            _uow.UniversityRawDataRepository.AddToContext(universityRawDatas);
+            await _uow.SaveChangesAsync();
         }
 
         private async Task<List<UniversityRawData>> GetAsync(List<string> countries)
@@ -81,10 +88,6 @@ namespace IServ.ETL.Services
                     if (response.IsSuccessStatusCode)
                     {
                         var universityRawDatas = JsonConvert.DeserializeObject<List<UniversityRawData>>(responseContent);
-
-                        _uow.UniversityRawDataRepository.AddToContext(universityRawDatas);
-                        await _uow.SaveChangesAsync();
-
                         result.AddRange(universityRawDatas);
                     }
                     else
