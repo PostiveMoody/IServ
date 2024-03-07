@@ -25,6 +25,14 @@
             }
         }
 
+        public ICountryRepository CountryRepository
+        {
+            get
+            {
+                return new CountryRepository(_context);
+            }
+        }
+
         public void SaveChanges()
         {
             this._context.SaveChanges();

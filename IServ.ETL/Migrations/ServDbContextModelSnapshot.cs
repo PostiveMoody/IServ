@@ -22,6 +22,10 @@ namespace IServ.ETL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.HasSequence<int>("CountryIdSequence")
+                .HasMin(1L)
+                .HasMax(100000L);
+
             modelBuilder.HasSequence<int>("UniversityIdSequence")
                 .HasMin(1L)
                 .HasMax(100000L);
@@ -29,6 +33,22 @@ namespace IServ.ETL.Migrations
             modelBuilder.HasSequence<int>("UniversityRawDataIdSequence")
                 .HasMin(1L)
                 .HasMax(100000L);
+
+            modelBuilder.Entity("IServ.ETL.Country", b =>
+                {
+                    b.Property<int>("CountryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR CountryIdSequence");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CountryId");
+
+                    b.ToTable("Country", (string)null);
+                });
 
             modelBuilder.Entity("IServ.ETL.University", b =>
                 {

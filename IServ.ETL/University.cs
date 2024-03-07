@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace IServ.ETL
+﻿namespace IServ.ETL
 {
     /// <summary>
     /// Университеты

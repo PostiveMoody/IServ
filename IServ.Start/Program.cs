@@ -20,6 +20,8 @@ namespace IServ.Start
             }
 
             var countries = args[0].Split(',').ToList();
+            InitializeCountries(countries);
+
             int.TryParse(args[1], out var numberThreads);
 
             await Extract(numberThreads, countries);
@@ -62,6 +64,25 @@ namespace IServ.Start
             }
 
             return universityRawDatas;
+        }
+
+        /// <summary>
+        /// Инциализирует-заполняет список стран в БД
+        /// </summary>
+        private static void InitializeCountries(List<string> countries)
+        {
+            ServDbContext db = new ServDbContext();
+            UnitOfWork unit = new UnitOfWork(db);
+
+            List<Country> result = new List<Country>();
+            
+            foreach (var country in countries)
+            {
+                result.Add(Country.Create(country));
+            }
+
+            unit.CountryRepository.AddToContext(result);
+            unit.SaveChanges();
         }
     }
 }
