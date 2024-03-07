@@ -1,6 +1,6 @@
-
+using IServ.WebApi;
 using IServ.WebApi.DAL;
-using IServ.WebApplication;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +24,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+// Если вы захотите иметь такую вложенность папок)
+const string pathToJson = @"D:\IServ\TechinicalSpecification\IServ\IServ.WebApi\Сountry\Country.json";
+if (File.Exists(pathToJson))
+{
+
 }
 
 app.UseStaticFiles();

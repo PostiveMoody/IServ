@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "IServ.Start": {
+      "commandName": "Project",
+      "commandLineArgs": "Russian+Federation,Canada,Brazil,Ukraine,Chile,France,China,United+Kingdom,India,United+States  \r\n3"
+    }
+  }
+}
