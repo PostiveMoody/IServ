@@ -34,9 +34,9 @@ namespace IServ.Start
 
             ServDbContext db = new ServDbContext();
             UnitOfWork unit = new UnitOfWork(db);
-            ExtractService extractService = new ExtractService(unit);
-            await extractService.Extarct(numberThreads);
-            
+            ETLService etlService = new ETLService(unit);
+            await etlService.Initialize(numberThreads);
+
             Console.ReadLine();
         }
     }
