@@ -25,10 +25,10 @@ namespace IServ.Start
                     throw new ArgumentException(nameof(args));
             }
 
-            if (!bool.TryParse(args[1], out bool result))
+            if (!bool.TryParse(args[1], out bool where))
                 throw new ArgumentException(nameof(args));
 
-            InitializeHelper.Initialize(result);
+            InitializeHelper.Initialize(where);
 
             int.TryParse(args[0], out var numberThreads);
 

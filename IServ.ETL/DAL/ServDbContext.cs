@@ -10,7 +10,11 @@ namespace IServ.ETL.DAL
 
         public ServDbContext()
         {
-            
+        }
+
+        public ServDbContext(DbContextOptions<ServDbContext> options)
+            : base(options)
+        {
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

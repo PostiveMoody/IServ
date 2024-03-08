@@ -12,7 +12,7 @@ namespace IServ.ETL.DAL
             this.dbContext = dbContext;
         }
 
-        public DbSet<UniversityRawData> Universities()
+        public DbSet<UniversityRawData> UniversityRawDatas()
         {
             return this.dbContext.UniversityRawDatas;
         }

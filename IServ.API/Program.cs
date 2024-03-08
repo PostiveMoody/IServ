@@ -1,34 +1,43 @@
+using IServ.API;
+using IServ.ETL.DAL;
+using IServ.ETL.Services;
+using Microsoft.EntityFrameworkCore;
 
-namespace IServ.API
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSwaggerGen();
+
+// Add services to the container.
+var conn = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<ServDbContext>(options =>
+    options.UseSqlServer(conn));
+
+
+builder.Services.AddTransient<ServDbContext, ServDbContext>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<ETLService, ETLService>();
+
+
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.UseMiddleware<MyMiddlewareClass>();
+
+app.MapControllers();
+
+app.Run();
