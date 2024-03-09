@@ -31,12 +31,12 @@ namespace IServ.API.Controllers
 
             if (!string.IsNullOrEmpty(country))
             {
-                querableRawData.Where(universityRawData => universityRawData.Country == country);
+                querableRawData = querableRawData.Where(universityRawData => universityRawData.Country == country);
             }
 
             if (!string.IsNullOrEmpty(name))
             {
-                querableRawData.Where(universityRawData => universityRawData.Name == name);
+                querableRawData = querableRawData.Where(universityRawData => universityRawData.Name == name);
             }
 
             var rawData = await querableRawData.ToListAsync();
@@ -46,13 +46,9 @@ namespace IServ.API.Controllers
             foreach (var data in rawData)
             {
                 result.Add(University.Save(
-                    now,
-                    data.AlphaTwoCode,
                     data.Country,
                     data.Name,
-                    data.WebPages,
-                    data.Domains,
-                    data.StateProvince));
+                    string.Join("",data.WebPages)));
 
             }
             
@@ -82,29 +78,21 @@ namespace IServ.API.Controllers
                .Select(university => new UniversityDto()
                {
                    UniversityId = university.UniversityId,
-                   AlphaTwoCode = university.AlphaTwoCode,
-                   StateProvince = university.StateProvince,
                    Country = university.Country,
                    Name = university.Name,
 
                    WebPageUrlAddresses = university.WebPages,
-                   WebPageDomains = university.Domains,
-
-                   CreationDate = university.CreationDate,
-                   UpdatedDate = university.UpdatedDate,
-                   UniversityVersion = university.UniversityVersion,
-                   IsDeleted = university.IsDeleted,
-
                });
 
+            var t = new List<UniversityDto>();
             if (!string.IsNullOrEmpty(country))
             {
-                qData.Where(universityRawData => universityRawData.Country == country);
+                qData = qData.Where(universityRawData => universityRawData.Country == country);
             }
 
             if (!string.IsNullOrEmpty(name))
             {
-                qData.Where(universityRawData => universityRawData.Name == name);
+                qData = qData.Where(universityRawData => universityRawData.Name == name);
             }
 
             var result = qData.ToArray();

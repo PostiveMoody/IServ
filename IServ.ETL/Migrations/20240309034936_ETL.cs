@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -43,16 +42,9 @@ namespace IServ.ETL.Migrations
                 columns: table => new
                 {
                     UniversityId = table.Column<int>(type: "int", nullable: false, defaultValueSql: "NEXT VALUE FOR UniversityIdSequence"),
-                    AlphaTwoCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    StateProvince = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WebPages = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Domains = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UniversityVersion = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    WebPages = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

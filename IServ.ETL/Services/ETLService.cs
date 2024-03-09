@@ -1,51 +1,46 @@
 ﻿using IServ.ETL.DAL;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace IServ.ETL.Services
 {
-    public class ETLService : ETLBase
+    public class ETLService : ETLBase<UniversityRawData, University>
     {
-        public static HttpClient client = new HttpClient();
+        protected readonly IUnitOfWork _uow;
+        private readonly HttpClient _httpClient;
+        private readonly IOptionsMonitor<EtlServiceOptions> _options;
 
-        public ETLService(IUnitOfWork uow) : base(uow)
+        protected static int quantityCountries = 10;
+
+        public ETLService(IUnitOfWork uow, HttpClient httpClient, IOptionsMonitor<EtlServiceOptions> options)
         {
+            _uow = uow;
+            _httpClient = httpClient;
+            _options = options;
         }
 
-        public async Task Initialize(int numberThreads)
+        protected override async Task<List<UniversityRawData>> Extract()
         {
-            await ETL(numberThreads);
-        }
+            string[] countries = _options.CurrentValue.Countries;
+            var threadsCount = _options.CurrentValue.ThreadNumbers;
 
-        protected override async Task ETL(int numberThreads)
-        {
-            base.ETL(numberThreads);
-        }
-
-        protected override async Task<List<UniversityRawData>> Extract(
-            int numberThreads)
-        {
-            var tasks = new List<Task<List<UniversityRawData>>>(numberThreads);
+            var tasks = new Task<List<UniversityRawData>>[threadsCount];
             var skip = 0;
-            var take = numberThreads;
+            var take = 3;
 
-            // O(n)
-            for (int j = 0; j < numberThreads; j++)
+            for (int j = 0; j < threadsCount; j++)
             {
-                ServDbContext db = new ServDbContext();
-                UnitOfWork unit = new UnitOfWork(db);
-                ETLService extractService = new ETLService(unit);
-
-                var countriesBatch = _countries
+                var countriesBatch = countries
                     .Skip(skip)
                     .Take(take)
                     .ToList();
 
-                var work = extractService.GetAsync(countriesBatch);
-                tasks.Add(work);
-                skip += numberThreads;
+                var work = GetAsync(countriesBatch);
+                tasks[j] = work;
+                skip += threadsCount;
             }
 
-            await Task.WhenAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
 
             var universityRawDatas = new List<UniversityRawData>();
             foreach (var task in tasks)
@@ -57,20 +52,24 @@ namespace IServ.ETL.Services
             return universityRawDatas;
         }
 
-        protected override List<UniversityRawData> Transofrm(List<UniversityRawData> universityRawDatas)
+        protected override List<University> Transofrm(List<UniversityRawData> universityRawDatas)
         {
-            // Мы могли бы отправить запрос в интеренет, и достать информацию о местоположении университета
-            foreach (var universityRawData in universityRawDatas)
+            List<University> result = new List<University>(universityRawDatas.Count);
+           
+            for (int i = 0; i < universityRawDatas.Count; i++)
             {
-                universityRawData.StateProvince = "Example";
+                var webPages = string.Join(";", universityRawDatas[i].WebPages);
+                var university = University.Save(universityRawDatas[i].Country, universityRawDatas[i].Name, webPages);
+                result.Add(university);
             }
 
-            return universityRawDatas;
+            return result;
         }
 
-        protected override async Task Load(List<UniversityRawData> universityRawDatas)
+        protected override async Task Load(List<UniversityRawData> rawData, List<University> transformData)
         {
-            _uow.UniversityRawDataRepository.AddToContext(universityRawDatas);
+            _uow.UniversityRawDataRepository.AddToContext(rawData);
+            _uow.UniversityRepository.AddToContext(transformData);
             await _uow.SaveChangesAsync();
         }
 
@@ -80,9 +79,9 @@ namespace IServ.ETL.Services
 
             foreach (var country in countries)
             {
-                var uri = $"http://universities.hipolabs.com/search?country={country}";
+                var url = $"http://universities.hipolabs.com/search?country={country}";
 
-                using (var response = await client.GetAsync(uri))
+                using (var response = await _httpClient.GetAsync(url))
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
                     if (response.IsSuccessStatusCode)
@@ -101,3 +100,5 @@ namespace IServ.ETL.Services
         }
     }
 }
+
+

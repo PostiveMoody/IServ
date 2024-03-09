@@ -1,6 +1,4 @@
-using IServ.API;
 using IServ.ETL.DAL;
-using IServ.ETL.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,8 +14,6 @@ builder.Services.AddDbContext<ServDbContext>(options =>
 
 builder.Services.AddTransient<ServDbContext, ServDbContext>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-builder.Services.AddTransient<ETLService, ETLService>();
-
 
 builder.Services.AddControllersWithViews();
 
@@ -35,8 +31,6 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-
-app.UseMiddleware<MyMiddlewareClass>();
 
 app.MapControllers();
 
