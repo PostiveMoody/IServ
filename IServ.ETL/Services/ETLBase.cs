@@ -1,6 +1,4 @@
-﻿using IServ.ETL.DAL;
-
-namespace IServ.ETL.Services
+﻿namespace IServ.ETL.Services
 {
     public abstract class ETLBase<TExtractModel, TLoadModel> 
         where TExtractModel : class 

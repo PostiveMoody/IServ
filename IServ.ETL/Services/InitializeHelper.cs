@@ -1,18 +1,15 @@
 ﻿using IServ.ETL.DAL;
 
-
 namespace IServ.ETL.Services
 {
     public static class InitializeHelper
     {
-        public const string countriesInitialData = "Russian+Federation,Canada,Brazil,Ukraine,Chile,France,China,United+Kingdom,India,United+States";
-
         /// <summary>
         /// Инциализирует-заполняет список стран в БД
         /// </summary>
-        public static void InitializeCountriesDb()
+        public static void InitializeCountriesDb(string[] countriesInitialData)
         {
-            var countries = countriesInitialData.Split(',').ToList();
+            var countries = countriesInitialData;
             ServDbContext db = new ServDbContext();
             UnitOfWork unit = new UnitOfWork(db);
 

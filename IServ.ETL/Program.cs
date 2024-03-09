@@ -10,13 +10,13 @@ namespace IServ.ETL
         /// <summary>
         /// Точка входа
         /// </summary>
-        /// <param name="args"> Первый arg - количество потоков, Второй arg - Флаг БД или Файл</param>
+        /// <param name="args"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         static async Task Main(string[] args)
         {
-            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync("Процесс обработки данных начался");
 
             var configuration = CreateConfiguration();
             var section = configuration.GetSection(nameof(EtlServiceOptions));
@@ -38,11 +38,12 @@ namespace IServ.ETL
 
             var serviceProvider = services.BuildServiceProvider();
 
-            InitializeHelper.InitializeCountriesDb();
+            InitializeHelper.InitializeCountriesDb(options.Countries);
 
             var etlService = serviceProvider.GetService<ETLBase<UniversityRawData, University>>();
             await etlService.RunEtl();
 
+            await Console.Out.WriteLineAsync("Процесс обработки данных завершился. Нажмите любую кнопку для завершения");
             Console.ReadLine();
         }
 

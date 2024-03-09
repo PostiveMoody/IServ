@@ -19,7 +19,6 @@
             {
                 Country = country,
                 Name = name,
-
                 WebPages = webPages,
             };
         }
