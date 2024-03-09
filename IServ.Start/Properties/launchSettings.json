@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "IServ.Start": {
-      "commandName": "Project",
-      "commandLineArgs": "3\r\nfalse"
-    }
-  }
-}

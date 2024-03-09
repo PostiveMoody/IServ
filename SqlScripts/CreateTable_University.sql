@@ -1,7 +1,7 @@
 USE [IServApp]
 GO
 
-/****** Object:  Table [dbo].[University]    Script Date: 29.02.2024 7:52:56 ******/
+/****** Object:  Table [dbo].[University]    Script Date: 09.03.2024 7:41:56 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -10,14 +10,9 @@ GO
 
 CREATE TABLE [dbo].[University](
 	[UniversityId] [int] NOT NULL,
-	[AlphaTwoCode] [nvarchar](max) NOT NULL,
-	[StateProvince] [nvarchar](max) NULL,
 	[Country] [nvarchar](max) NOT NULL,
 	[Name] [nvarchar](max) NOT NULL,
-	[CreationDate] [datetime2](7) NOT NULL,
-	[UpdatedDate] [datetime2](7) NOT NULL,
-	[UniversityVersion] [int] NOT NULL,
-	[IsDeleted] [bit] NOT NULL,
+	[WebPages] [nvarchar](max) NOT NULL,
  CONSTRAINT [PK_University] PRIMARY KEY CLUSTERED 
 (
 	[UniversityId] ASC
@@ -27,5 +22,3 @@ GO
 
 ALTER TABLE [dbo].[University] ADD  DEFAULT (NEXT VALUE FOR [UniversityIdSequence]) FOR [UniversityId]
 GO
-
-
