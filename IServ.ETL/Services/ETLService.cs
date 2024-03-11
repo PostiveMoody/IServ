@@ -26,7 +26,7 @@ namespace IServ.ETL.Services
 
             var tasks = new Task<List<UniversityRawData>>[threadsCount];
             var skip = 0;
-            var take = 3;
+            var take = countries.Length / threadsCount + 1;
 
             for (int j = 0; j < threadsCount; j++)
             {
@@ -37,7 +37,7 @@ namespace IServ.ETL.Services
 
                 var work = GetAsync(countriesBatch);
                 tasks[j] = work;
-                skip += threadsCount;
+                skip += take;
             }
 
             await Task.WhenAll(tasks);
