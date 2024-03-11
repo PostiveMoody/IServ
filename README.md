@@ -29,105 +29,89 @@ http://www.site1.ru/;http://www.site2.ru/)
 # Скрипт SQL для создания таблицы
 Данный проект содержит всего 3 таблицы и 1 техническую. Таблицы были созданы при помощи подхода Code-First EF.
 
-1) University - таблица учебных заведений с описанием стран, uri, доменом.
+1) University - таблица учебных заведений с очищенными данными
    
-        USE [IServApp]
-        GO
-        
-        /****** Object:  Table [dbo].[University]    Script Date: 29.02.2024 7:52:56 ******/
-        SET ANSI_NULLS ON
-        GO
-        
-        SET QUOTED_IDENTIFIER ON
-        GO
-        
-        CREATE TABLE [dbo].[University](
-        	[UniversityId] [int] NOT NULL,
-        	[AlphaTwoCode] [nvarchar](max) NOT NULL,
-        	[StateProvince] [nvarchar](max) NULL,
-        	[Country] [nvarchar](max) NOT NULL,
-        	[Name] [nvarchar](max) NOT NULL,
-        	[CreationDate] [datetime2](7) NOT NULL,
-        	[UpdatedDate] [datetime2](7) NOT NULL,
-        	[UniversityVersion] [int] NOT NULL,
-        	[IsDeleted] [bit] NOT NULL,
-         CONSTRAINT [PK_University] PRIMARY KEY CLUSTERED 
-        (
-        	[UniversityId] ASC
-        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-        ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-        GO
-        
-        ALTER TABLE [dbo].[University] ADD  DEFAULT (NEXT VALUE FOR [UniversityIdSequence]) FOR [UniversityId]
-        GO
-
-2) WebPage - веб страница университета. Была создана отдельная таблица, так и отдельный класс, так как это объект. **И у данного объекта должно быть свое поведение, это не просто string**
-
          USE [IServApp]
          GO
          
-         /****** Object:  Table [dbo].[WebPage]    Script Date: 29.02.2024 7:57:30 ******/
+         /****** Object:  Table [dbo].[University]    Script Date: 09.03.2024 7:41:56 ******/
          SET ANSI_NULLS ON
          GO
          
          SET QUOTED_IDENTIFIER ON
          GO
          
-         CREATE TABLE [dbo].[WebPage](
-         	[WebPageId] [int] IDENTITY(1,1) NOT NULL,
-         	[WebPageUrlAddress] [nvarchar](max) NOT NULL,
-         	[WebPageName] [nvarchar](max) NULL,
-         	[UniversityId] [int] NULL,
-          CONSTRAINT [PK_WebPage] PRIMARY KEY CLUSTERED 
+         CREATE TABLE [dbo].[University](
+         	[UniversityId] [int] NOT NULL,
+         	[Country] [nvarchar](max) NOT NULL,
+         	[Name] [nvarchar](max) NOT NULL,
+         	[WebPages] [nvarchar](max) NOT NULL,
+          CONSTRAINT [PK_University] PRIMARY KEY CLUSTERED 
          (
-         	[WebPageId] ASC
+         	[UniversityId] ASC
          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
          ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
          GO
          
-         ALTER TABLE [dbo].[WebPage]  WITH CHECK ADD  CONSTRAINT [FK_WebPage_University_UniversityId] FOREIGN KEY([UniversityId])
-         REFERENCES [dbo].[University] ([UniversityId])
-         GO
-         
-         ALTER TABLE [dbo].[WebPage] CHECK CONSTRAINT [FK_WebPage_University_UniversityId]
+         ALTER TABLE [dbo].[University] ADD  DEFAULT (NEXT VALUE FOR [UniversityIdSequence]) FOR [UniversityId]
          GO
 
-3) WebPageDomain - домен страница университета. Была создана отдельная таблица, так и отдельный класс, так как это объект. **И у данного объекта должно быть свое поведение, это не просто string**
+2) UniversityRawData - таблица с "сырыми данными"
 
          USE [IServApp]
          GO
          
-         /****** Object:  Table [dbo].[WebPageDomain]    Script Date: 29.02.2024 8:00:27 ******/
+         /****** Object:  Table [dbo].[UniversityRawData]    Script Date: 07.03.2024 11:52:33 ******/
          SET ANSI_NULLS ON
          GO
          
          SET QUOTED_IDENTIFIER ON
          GO
          
-         CREATE TABLE [dbo].[WebPageDomain](
-         	[WebPageDomainId] [int] IDENTITY(1,1) NOT NULL,
-         	[WebPageDomainFullName] [nvarchar](max) NOT NULL,
-         	[WebPageDomainSecondLevel] [nvarchar](max) NOT NULL,
-         	[WebPageDomainRoot] [nvarchar](max) NOT NULL,
-         	[WebPageDomainProtocol] [nvarchar](max) NULL,
-         	[WebPageDomainFourthLevel] [nvarchar](max) NULL,
-         	[WebPageDomainThirdLevel] [nvarchar](max) NULL,
-         	[UniversityId] [int] NULL,
-          CONSTRAINT [PK_WebPageDomain] PRIMARY KEY CLUSTERED 
+         CREATE TABLE [dbo].[UniversityRawData](
+         	[UniversityRawDataId] [int] NOT NULL,
+         	[AlphaTwoCode] [nvarchar](max) NULL,
+         	[StateProvince] [nvarchar](max) NULL,
+         	[Name] [nvarchar](max) NOT NULL,
+         	[Country] [nvarchar](max) NOT NULL,
+         	[WebPages] [nvarchar](max) NOT NULL,
+         	[Domains] [nvarchar](max) NOT NULL,
+          CONSTRAINT [PK_UniversityRawData] PRIMARY KEY CLUSTERED 
          (
-         	[WebPageDomainId] ASC
+         	[UniversityRawDataId] ASC
          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
          ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
          GO
          
-         ALTER TABLE [dbo].[WebPageDomain]  WITH CHECK ADD  CONSTRAINT [FK_WebPageDomain_University_UniversityId] FOREIGN KEY([UniversityId])
-         REFERENCES [dbo].[University] ([UniversityId])
-         GO
-         
-         ALTER TABLE [dbo].[WebPageDomain] CHECK CONSTRAINT [FK_WebPageDomain_University_UniversityId]
+         ALTER TABLE [dbo].[UniversityRawData] ADD  DEFAULT (NEXT VALUE FOR [UniversityRawDataIdSequence]) FOR [UniversityRawDataId]
          GO
 
-**Так же был создан sequence**
+3) Country - таблица со странами
+
+         USE [IServApp]
+         GO
+         
+         /****** Object:  Table [dbo].[Country]    Script Date: 11.03.2024 9:40:57 ******/
+         SET ANSI_NULLS ON
+         GO
+         
+         SET QUOTED_IDENTIFIER ON
+         GO
+         
+         CREATE TABLE [dbo].[Country](
+         	[CountryId] [int] NOT NULL,
+         	[Name] [nvarchar](max) NOT NULL,
+          CONSTRAINT [PK_Country] PRIMARY KEY CLUSTERED 
+         (
+         	[CountryId] ASC
+         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+         ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+         GO
+         
+         ALTER TABLE [dbo].[Country] ADD  DEFAULT (NEXT VALUE FOR [CountryIdSequence]) FOR [CountryId]
+         GO
+
+**Так же были созданф sequences**
 
       USE [IServApp]
       GO
@@ -137,6 +121,38 @@ http://www.site1.ru/;http://www.site2.ru/)
       
       /****** Object:  Sequence [dbo].[UniversityIdSequence]    Script Date: 29.02.2024 8:02:32 ******/
       CREATE SEQUENCE [dbo].[UniversityIdSequence] 
+       AS [int]
+       START WITH 1
+       INCREMENT BY 1
+       MINVALUE 1
+       MAXVALUE 100000
+       CACHE 
+      GO
+      
+      USE [IServApp]
+      GO
+      
+      USE [IServApp]
+      GO
+      
+      /****** Object:  Sequence [dbo].[UniversityRawDataIdSequence]    Script Date: 07.03.2024 11:54:23 ******/
+      CREATE SEQUENCE [dbo].[UniversityRawDataIdSequence] 
+       AS [int]
+       START WITH 1
+       INCREMENT BY 1
+       MINVALUE 1
+       MAXVALUE 100000
+       CACHE 
+      GO
+
+      USE [IServApp]
+      GO
+      
+      USE [IServApp]
+      GO
+      
+      /****** Object:  Sequence [dbo].[CountryIdSequence]    Script Date: 11.03.2024 9:41:52 ******/
+      CREATE SEQUENCE [dbo].[CountryIdSequence] 
        AS [int]
        START WITH 1
        INCREMENT BY 1
